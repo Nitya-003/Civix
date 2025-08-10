@@ -1,37 +1,50 @@
-/// <reference types="cypress" />
-// ***********************************************
-// This example commands.ts shows you how to
-// create various custom commands and overwrite
-// existing commands.
-//
-// For more comprehensive examples of custom
-// commands please read more here:
-// https://on.cypress.io/custom-commands
-// ***********************************************
-//
-//
-// -- This is a parent command --
-// Cypress.Commands.add('login', (email, password) => { ... })
-//
-//
-// -- This is a child command --
-// Cypress.Commands.add('drag', { prevSubject: 'element'}, (subject, options) => { ... })
-//
-//
-// -- This is a dual command --
-// Cypress.Commands.add('dismiss', { prevSubject: 'optional'}, (subject, options) => { ... })
-//
-//
-// -- This will overwrite an existing command --
-// Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
-//
-// declare global {
-//   namespace Cypress {
-//     interface Chainable {
-//       login(email: string, password: string): Chainable<void>
-//       drag(subject: string, options?: Partial<TypeOptions>): Chainable<Element>
-//       dismiss(subject: string, options?: Partial<TypeOptions>): Chainable<Element>
-//       visit(originalFn: CommandOriginalFn, url: string, options: Partial<VisitOptions>): Chainable<Element>
-//     }
-//   }
-// }
+declare global {
+  namespace Cypress {
+    interface Chainable {
+      waitForMapToLoad(): Chainable<Element>;
+      selectCategoryFilter(category: string): Chainable<Element>;
+      setDateRange(from: string, to: string): Chainable<Element>;
+      toggleHeatmap(): Chainable<Element>;
+      getMarkerClusters(): Chainable<Element>;
+      getIndividualMarkers(): Chainable<Element>;
+    }
+  }
+}
+
+Cypress.Commands.add('waitForMapToLoad', () => {
+  cy.get('.leaflet-container').should('be.visible');
+  cy.get('.leaflet-tile').should('be.visible');
+  cy.wait(2000);
+});
+
+Cypress.Commands.add('selectCategoryFilter', (category: string) => {
+  cy.get(`input[type="checkbox"]`)
+    .parent()
+    .contains(category)
+    .parent()
+    .find('input[type="checkbox"]')
+    .check();
+});
+
+Cypress.Commands.add('setDateRange', (from: string, to: string) => {
+  cy.get('input[type="date"]').first().clear().type(from);
+  cy.get('input[type="date"]').last().clear().type(to);
+});
+
+Cypress.Commands.add('toggleHeatmap', () => {
+  cy.get('input[type="checkbox"]')
+    .parent()
+    .contains('Show Heatmap')
+    .parent()
+    .find('input[type="checkbox"]')
+    .click();
+});
+
+Cypress.Commands.add('getMarkerClusters', () => {
+  return cy.get('.marker-cluster');
+});
+
+// Custom command to get individual markers
+Cypress.Commands.add('getIndividualMarkers', () => {
+  return cy.get('.custom-marker');
+});
